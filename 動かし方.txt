@@ -8,9 +8,14 @@ run.pyがあるディレクトリで
 
 【初期設定】
 git remote add origin https://github.com/iikyara/iStand.git
+git push -u origin master
+を一回ずつ実行しておく
 
 【ダウンロード】
-git pull -u origin master
+git pull origin master
 
 【アップロード】
-git push -u origin master
+git add .
+git commit -am "comment"
+git push
+の3手順でアップロード
