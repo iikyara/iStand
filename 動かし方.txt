@@ -5,3 +5,12 @@ run.pyがあるディレクトリで
 【出来なかった時】
   pip install -r requestments.txt
 を実行（足りないライブラリのインストールをしている）
+
+【初期設定】
+git remote add origin https://github.com/iikyara/iStand.git
+
+【ダウンロード】
+git pull -u origin master
+
+【アップロード】
+git push -u origin master
