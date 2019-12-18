@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% set title = "管理ページ" %}
+{% block additional %}
+{% endblock %}
+
+{% block content %}
+<h2>管理ページ</h2>
+<form action="home.html" id="search_form" method="post">
+  検索： <input type="text" name="query" value="">
+  <input type="submit" name="submit" value="送信">
+</form>
+<div id="book_list">
+
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="{{ url_for('static', filename='js/management.js') }}" charset="utf-8"></script>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% set title = "追加ページ" %}
+{% block additional %}
+{% endblock %}
+
+{% block content %}
+<h2>追加ページ</h2>
+<p>
+  <h1>新しい本を追加する</h1>
+  <p><a href="/addfromcam/">カメラから</a></p>
+  <p><a href="/addfromisbn/">ISBNを直接入力</a></p>
+</p>
+<p>
+  <h1>取り出した本を収納する</h1>
+  <p><a href="/addfromhist/">履歴から</a></p>
+</p>
+{% endblock %}

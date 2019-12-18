@@ -1,0 +1,7 @@
+run.pyがあるディレクトリで
+  python run.py
+を実行
+
+【出来なかった時】
+  pip install -r requestments.txt
+を実行（足りないライブラリのインストールをしている）

@@ -1,0 +1,13 @@
+{% extends "test_base.html" %}
+{% block additional %}
+{% endblock %}
+
+{% block content %}
+<h3>Hello</h3>
+こんにちは．{{name}}さん <br>
+<h2>以下，テストページ</h2>
+<a href="/test_camera">カメラテスト</a><br>
+<a href="/test_bootstrap">Bootstrapテスト</a><br>
+<a href="/detail?id=0">詳細ページテスト１</a>
+<a href="/detail?id=10000000">詳細ページテスト２</a>
+{% endblock %}

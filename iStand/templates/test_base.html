@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    {% block additional %}
+    {% endblock %}
+    <title>{{title}} - iStand</title>
+  </head>
+  <body>
+    <h1><a href="/test">テストホームに戻る</a></h1>
+    <h1><a href="/">実際のページへ</a></h1>
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>

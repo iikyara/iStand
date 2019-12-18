@@ -1,0 +1,18 @@
+{% extends "test_base.html" %}
+{% block additional %}
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/test_camera.css') }}" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+{% endblock %}
+
+{% block content %}
+<video id="video" autoplay playsinline></video>
+<script src="{{ url_for('static', filename='js/test_camera.js') }}"></script>
+<button type="button" name="take">撮影</button>
+
+<form method="post" enctype="multipart/form-data" action="/test_api">
+画像ファイル<input type="file" name="pic">
+<br>
+<input type="submit" name="botan" value="send">
+</form>
+{% endblock %}
