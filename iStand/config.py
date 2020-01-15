@@ -29,7 +29,7 @@ PIN_SWITCHES_BETWEEN = [
 ]
 '''
 PIN_SWITCHES_BOX = [
-    26,  # switch 1
+    4,   # switch 1
     13,  # switch 2
     6,   # switch 3
     5    # switch 4
