@@ -12,6 +12,15 @@
 <div id="book_list">
 
 </div>
+<div id="detail_overflow">
+  <button type="button" id="close">閉じる</button>
+  <button type="button" id="pickup">取り出し</button>
+  <input type="hidden" id="bookid" value="">
+  <div id="zone_detail">
+
+  </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="{{ url_for('static', filename='js/management.js') }}" charset="utf-8"></script>
 {% endblock %}

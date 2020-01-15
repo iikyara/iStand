@@ -22,6 +22,7 @@ class Book(db.Model):
 class Log(db.Model):
     __tablename__ = 'LOG'
     id = db.Column(db.INTEGER, primary_key=True)
+    #session = db.Column(db.INTEGER)
     date = db.Column(db.DATETIME(timezone=True), server_default=db.func.current_timestamp())
     book_id = db.Column(db.INTEGER, db.ForeignKey('BOOK.id'))
     book = db.relationship("Book")
@@ -42,6 +43,13 @@ class Block(db.Model):
 
     def __repr__(self):
         return "<BLOCK id={} position={}>".format(self.id, self.position)
+
+class Motor(db.Model):
+    __tablename__ = 'MOTOR'
+    id = db.Column(db.INTEGER, primary_key=True)
+    frequency = db.Column(db.INTEGER)
+    dutycycle = db.Column(db.INTEGER)
+    speed = db.Column(db.Float)
 
 '''
 class APIParser(db.Model):

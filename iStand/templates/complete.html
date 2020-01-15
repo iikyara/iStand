@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% set title = "完了" %}
+{% block additional %}
+{% endblock %}
+
+{% block content %}
+<div id="moving">
+  <h2>移動中</h2>
+</div>
+<div id="stop">
+  <h2>移動完了</h2>
+  {% if data.operation == 'add' %}
+  本を入れてください．（ブロック番号：{{data.block_id}}）
+  {% elif data.operation == 'pickup'%}
+  本を取り出してください．（ブロック番号：{{data.block_id}}）
+  {% endif %}
+</div>
+<div id="complete">
+  <h2>ホームに戻れ</h2>
+  <a href="/">ホームへ</a>
+  {% if data.operation == 'add' %}
+  <a href="/additional/">続けて追加</a>
+  {% endif %}
+</div>
+
+<!-- book info field -->
+<input type="hidden" id="operation" value="{{data.operation}}">
+<input type="hidden" id="session" value="{{data.session}}">
+<input type="hidden" id="title" value="{{data.title}}">
+<input type="hidden" id="isbn" value="{{data.isbn}}">
+<input type="hidden" id="authors" value="{{data.authors}}">
+<input type="hidden" id="publisher" value="{{data.publisher}}">
+<input type="hidden" id="thumbnail" value="{{data.thumbnail}}">
+<input type="hidden" id="block_id" value="{{data.block_id}}">
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="{{ url_for('static', filename='js/complete.js') }}" charset="utf-8"></script>
+{% endblock %}

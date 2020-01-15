@@ -1,8 +1,26 @@
 {% extends "base.html" %}
-{% set title = "管理ページ" %}
+{% set title = "ブロック選択" %}
 {% block additional %}
 {% endblock %}
 
 {% block content %}
-<h2>送信完了</h2>
+<h2>ブロック選択</h2>
+本を収納するブロックを選んでください．
+{% for i in range(1, 7) %}
+  <div id="block{{i}}">
+    <button type="button" name="blk_btn" id="blk_btn{{i}}">ブロック{{i}}に入れる</button>
+  </div>
+{% endfor %}
+title : {{data.title}}<br>
+authors : {{data.authors}}<br>
+<!-- book info field -->
+<input type="hidden" id="session" value="{{data.session}}">
+<input type="hidden" id="title" value="{{data.title}}">
+<input type="hidden" id="isbn" value="{{data.isbn}}">
+<input type="hidden" id="authors" value="{{data.authors}}">
+<input type="hidden" id="publisher" value="{{data.publisher}}">
+<input type="hidden" id="thumbnail" value="{{data.thumbnail}}">
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="{{ url_for('static', filename='js/confirm.js') }}" charset="utf-8"></script>
 {% endblock %}

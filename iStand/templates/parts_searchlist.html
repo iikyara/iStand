@@ -1,5 +1,11 @@
-<div id="book{{book.id}}">
+<div name="book" id="book{{book.book_id}}">
   <img src="{{book.thumbnail}}" alt="サムネイル">
-  タイトル：{{book.title}}
-  著者：{{book.authors[0]}}
+  <div>
+    タイトル：{{book.title}}
+  </div>
+  <div>
+    著者：{{book.authors[0]}}
+  </div>
+  <button type="button" name="pickup" id="pickup{{book.book_id}}">取り出し</button>
+  <button type="button" name="detail" id="detail{{book.book_id}}">詳細</button>
 </div>

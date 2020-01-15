@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% set title = "ISBNから追加ページ" %}
+{% block additional %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/addfromisbn.css') }}">
+{% endblock %}
+
+{% block content %}
+<h2>ISBNから追加ページ</h2>
+<form id="image_form" enctype="multipart/form-data">
+  画像ファイル <br>
+  <input type="file" name="pic">
+  <br>
+  <input type="submit" name="botan" value="send">
+</form>
+<div id="results">
+
+</div>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="{{ url_for('static', filename='js/addfromisbn.js') }}" charset="utf-8"></script>
+{% endblock %}

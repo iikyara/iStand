@@ -3,14 +3,35 @@ import requests
 import json
 import inspect
 import numpy as np
-import cv2
-from iStand import db
+import time
+import pigpio
+#import cv2
+import io
+from PIL import Image
+from iStand import db, config
 from iStand.models import *
+from iStand.config import *
 
+'''
+# Using opencv
 def image_to_barcode(image):
     stream = image.stream
     img_array = np.asarray(bytearray(stream.read()), dtype=np.uint8)
     img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+    if img is None:
+        return -1
+    result = decode(img)
+    if len(result) == 0:
+        return -1
+    else:
+        return [x[0].decode('utf-8', 'ignore') for x in result]
+'''
+
+# Using io and pillow
+def image_to_barcode(image):
+    img_read = image.stream.read()
+    img_bin = io.BytesIO(img_read)
+    img = Image.open(img_bin)
     if img is None:
         return -1
     result = decode(img)
@@ -49,9 +70,15 @@ class BookInfo:
     def to_json(self):
         return self.__dict__
 
-
 def isbn_to_info_as_json(isbns):
     infos = isbn_to_info(isbns)
+    list = []
+    for info in infos:
+        list.append(info.to_json())
+    return list
+
+def bookid_to_info_as_json(bookids):
+    infos = bookid_to_info(bookids)
     list = []
     for info in infos:
         list.append(info.to_json())
@@ -61,6 +88,20 @@ def isbn_to_info_as_json(isbns):
 def isbn_to_info(isbns):
     list = []
     for isbn in isbns:
+        list += isbn_to_info_from_opendb(isbn)
+    return list
+
+#全てのbookidに対して本情報を検索する．
+def bookid_to_info(bookids):
+    list = []
+    for bookid in bookids:
+        #bookidからisbnを取得
+        print(bookid)
+        isbn = db.session.query(Book.isbn).filter(Book.id==bookid).first()
+        print(isbn)
+        if isbn is None:
+            continue
+        isbn = isbn[0]
         list += isbn_to_info_from_opendb(isbn)
     return list
 
@@ -199,6 +240,224 @@ def get_list_of_books():
         )
     return list
 
+# 本取り出し（ブロックを検索して，ブロックが前面に来るように動く）
+def pickup_book(bookid):
+    blockid = get_blockid_from_bookid(bookid)
+    print(blockid)
+    moving_block_and_sonic_sensor(blockid)
+
+def get_blockid_from_bookid(bookid):
+    book = db.session.query(Book.block_id).filter(Book.id==bookid).first()
+    if book is None:
+        return -1
+    return book[0]
+
+# ブロック移動からセンサ感知までの一連の動作
+isCompletedBlock = False
+isCompletedSonicSensor = False
+isFinished = False
+def moving_block_and_sonic_sensor(blk):
+    global isCompletedBlock
+    global isCompletedSonicSensor
+    global isFinished
+    isCompletedBlock = False
+    isCompletedSonicSensor = False
+    isFinished = False
+    print('initialize')
+
+    start_moving_block(blk)
+    isCompletedBlock = True
+    print('Moving block is Completed.')
+
+    isCompletedSonicSensor = catch_through_book([blk], 5)
+    isFinished = True
+
+    print('All is Finished.')
+
+def get_state():
+    return [isCompletedBlock, isCompletedSonicSensor, isFinished]
+
+# ブロック移動
+#isMovingBlock = False
+# blk : ブロック番号
+# blkで指定したブロックが前面に来るまで回す
+def start_moving_block(blk):
+    #isMovingBlock = True
+    #処理
+    #time.sleep(3)
+    position = db.session.query(Block.position).filter(Block.id==blk).first()[0]
+    print(position)
+    if position in [0, 1]:
+        for i in range(4):
+            rotate_motor(190, cw=True)
+            rotate_motor(0, cw=False, isSW=True,
+             pin_sw=config['PIN_SWITCHES_BOX'][(i + 2) % 4])
+
+# cw = True で時計回り
+def rotate_motor(rect, cw=True, isSW=False, pin_sw=-1):
+    pi = pigpio.pi()
+    pi.set_mode(PIN_MOTOR1, pigpio.OUTPUT)
+    pi.set_mode(PIN_MOTOR2, pigpio.OUTPUT)
+    if isSW:
+        pi.set_mode(pin_sw, pigpio.INPUT)
+
+    pi.hardware_PWM(PIN_MOTOR1, MOTOR_FREQUENCY, MOTOR_DUTY if cw else 0)
+    pi.hardware_PWM(PIN_MOTOR2, MOTOR_FREQUENCY, MOTOR_DUTY if not cw else 0)
+
+    # 調整
+    if isSW:
+        while pi.read(pin_sw) == 1:
+            pass
+    else:
+        time.sleep(rect / config['MOTOR_SPEED'])
+
+    pi.hardware_PWM(PIN_MOTOR1, MOTOR_FREQUENCY, 0)
+    pi.hardware_PWM(PIN_MOTOR2, MOTOR_FREQUENCY, 0)
+
+    pi.set_mode(PIN_MOTOR1, pigpio.INPUT)
+    pi.set_mode(PIN_MOTOR2, pigpio.INPUT)
+    pi.stop()
+
+'''
+def is_moving_block():
+    return isMovingBlock
+'''
+
+# 超音波センサー
+isRunningSonicSensor = False
+terminationSonicSensorRequest = False
+stateOfSonicSensor1 = -1 #距離を格納
+stateOfSonicSensor2 = -1 #距離を格納
+def start_sonic_sensor():
+    global isRunningSonicSensor
+    global terminationSonicSensorRequest
+    global stateOfSonicSensor1
+    global stateOfSonicSensor2
+
+    #既に稼働済みなら実行しない
+    if isRunningSonicSensor:
+        return
+
+    isRunningSonicSensor = True
+
+    pi = pigpio.pi()
+    pi.set_mode(config["PIN_SONICSENSOR1_ECHO"], pigpio.INPUT)
+    pi.set_mode(config["PIN_SONICSENSOR1_TRIG"], pigpio.OUTPUT)
+    pi.set_mode(config["PIN_SONICSENSOR2_ECHO"], pigpio.INPUT)
+    pi.set_mode(config["PIN_SONICSENSOR2_TRIG"], pigpio.OUTPUT)
+
+    # 超音波センサーで距離を測定
+    terminationSonicSensorRequest = False
+    while not terminationSonicSensorRequest:
+        pass
+
+    pi.set_mode(config["PIN_SONICSENSOR1_ECHO"], pigpio.INPUT)
+    pi.set_mode(config["PIN_SONICSENSOR1_TRIG"], pigpio.INPUT)
+    pi.set_mode(config["PIN_SONICSENSOR2_ECHO"], pigpio.INPUT)
+    pi.set_mode(config["PIN_SONICSENSOR2_TRIG"], pigpio.INPUT)
+    pi.stop()
+
+    isRunningSonicSensor = False
+
+def stop_sonic_sensor():
+    global isRunningSonicSensor
+    global terminationSonicSensorRequest
+    # 終了リクエスト
+    terminationSonicSensorRequest = True
+    #終了確認
+    cnt = 0
+    # 3秒以内に停止しなかったらエラー
+    while isRunningSonicSensor:
+        time.sleep(0.1)
+        cnt += 1
+        if cnt > 30:
+            return False
+    return True
+
+# n秒間本の通過の感知を試みる
+# blksはブロック番号のリスト．以下で指定
+# 2 4
+# 1 3
+UPPER_CENTER = 22.5
+LOWER_CENTER = 7.5
+BLOCK_RANGE = 15
+def catch_through_book(blks, n):
+    global isRunningSonicSensor
+
+    #既に稼働済みなら実行しない
+    if isRunningSonicSensor:
+        print('duplication')
+        return False
+
+    isRunningSonicSensor = True
+
+    PIN = [
+        {
+            'ECHO': config["PIN_SONICSENSOR1_ECHO"],
+            'TRIG': config["PIN_SONICSENSOR1_TRIG"]
+        },
+        {
+            'ECHO': config["PIN_SONICSENSOR2_ECHO"],
+            'TRIG': config["PIN_SONICSENSOR2_TRIG"]
+        }
+    ]
+
+    pi = pigpio.pi()
+    pi.set_mode(PIN[0]['ECHO'], pigpio.INPUT)
+    pi.set_mode(PIN[0]['TRIG'], pigpio.OUTPUT)
+    pi.set_mode(PIN[1]['ECHO'], pigpio.INPUT)
+    pi.set_mode(PIN[1]['TRIG'], pigpio.OUTPUT)
+
+    # 1秒間に10回
+    for _ in range(n * 10):
+        result = [0, 0]
+        for i in range(2):
+            pi.write(PIN[i]['TRIG'], 0)
+
+            time.sleep(0.3)
+            # send a 10us plus to Trigger
+            pi.write(PIN[i]['TRIG'], 1)
+            time.sleep(0.00001)
+            pi.write(PIN[i]['TRIG'], 0)
+
+            # detect TTL level signal on Echo
+            while pi.read(PIN[i]['ECHO']) == 0:
+              signaloff = time.time()
+            while pi.read(PIN[i]['ECHO']) == 1:
+              signalon = time.time()
+
+            # calculate the time interval
+            timepassed = signalon - signaloff
+
+            # we now have our distance but it's not in a useful unit of
+            # measurement. So now we convert this distance into centimetres
+            result[i] = timepassed * (331.50 + 0.606681 * 20)* 100/2
+
+        # 判別
+        for blk in blks:
+            if blk == 1 and (LOWER_CENTER - BLOCK_RANGE) <= result[0] <= (LOWER_CENTER + BLOCK_RANGE):
+                return True
+            elif blk == 2 and (UPPER_CENTER - BLOCK_RANGE) <= result[0] <= (UPPER_CENTER + BLOCK_RANGE):
+                return True
+            elif blk == 3 and (LOWER_CENTER - BLOCK_RANGE) <= result[1] <= (LOWER_CENTER + BLOCK_RANGE):
+                return True
+            elif blk == 4 and (UPPER_CENTER - BLOCK_RANGE) <= result[1] <= (UPPER_CENTER + BLOCK_RANGE):
+                return True
+
+        time.sleep(0.1)
+
+    pi.set_mode(PIN[0]['EHCO'], pigpio.INPUT)
+    pi.set_mode(PIN[0]['TRIG'], pigpio.INPUT)
+    pi.set_mode(PIN[1]['EHCO'], pigpio.INPUT)
+    pi.set_mode(PIN[1]['TRIG'], pigpio.INPUT)
+    pi.stop()
+
+    isRunningSonicSensor = False
+    return False
+
+def get_state_of_sonic_sensor():
+    return [stateOfSonicSensor1, stateOfSonicSensor2]
+
 if __name__ == '__main__':
     #isbn_to_info_from_opendb(9784101006062)
     #isbn_to_info_from_opendb(1920082019006)
@@ -208,6 +467,8 @@ if __name__ == '__main__':
     #print(APIParse(data, ['summary', 'title'], default="title"))
     #print(APIParse(data, ['summary', 'titlee'], default="title"))
     #print(APIParse(data, ['onix', 'CollateralDetail', 'TextContent', 1, 'Text'], default="detail"))
-    infos = isbn_to_info_as_json(["9784101006062", "9784523172765", 1920082019006])
+    #infos = isbn_to_info_as_json(["9784101006062", "9784523172765", 1920082019006])
+    #infos = bookid_to_info_as_json([0, 1])
+
     for bi in infos:
         print(bi)
