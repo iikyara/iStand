@@ -12,8 +12,8 @@ SECRET_KEY = os.getenv('SECRET_KEY') or "secret key"
 JSON_AS_ASCII = False
 
 #各種ピン番号
-PIN_MOTOR1 = 17 #時計回り用
-PIN_MOTOR2 = 27 #反時計回り用
+PIN_MOTOR1 = 8 #時計回り用
+PIN_MOTOR2 = 9 #反時計回り用
 PIN_SONICSENSOR1_ECHO = 2
 PIN_SONICSENSOR1_TRIG = 3
 PIN_SONICSENSOR2_ECHO = 17
@@ -30,9 +30,9 @@ PIN_SWITCHES_BETWEEN = [
 '''
 PIN_SWITCHES_BOX = [
     26,  # switch 1
-    19,  # switch 2
-    13,  # switch 3
-    6    # switch 4
+    13,  # switch 2
+    6,   # switch 3
+    5    # switch 4
 ]
 
 #モーター動作周波数とデューティーサイクルの設定

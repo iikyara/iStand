@@ -82,4 +82,30 @@ $(function(){
 
   $('#toggle_r').on('click', start);
   $('#toggle_l').on('click', start);
+
+  var elem_second = $('#second');
+  var elem_num = $('#num');
+  $('#save').on('click', function(e){
+    console.log('a');
+    var s = elem_second.val();
+    var n = elem_num.val();
+    speed = 360 * n / s;
+    data = {
+      freq : elem_freq.val(),
+      duty : elem_duty.val(),
+      speed : speed
+    };
+    $.post({
+      url: "/upload_motor_data/",        // POST送信先のURL
+      data: JSON.stringify(data),  // JSONデータ本体
+      contentType: 'application/json', // リクエストの Content-Type
+      dataType: "json",           // レスポンスをJSONとしてパースする
+      success: function(data) {   // 200 OK時
+        console.log(data);
+      },
+      error: function() {         // HTTPエラー時
+        alert("Server Error. Pleasy try again later.");
+      }
+    });
+  });
 });

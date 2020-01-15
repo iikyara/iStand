@@ -13,7 +13,12 @@ oninput="document.getElementById('freq_o').value=this.value">
 oninput="document.getElementById('duty_o').value=this.value">
 <output id="duty_o">1</output><br>
 <button type="button" id="toggle_r">スタート</button><br>
-<button type="button" id="toggle_l">スタート</button><br>
+<button type="button" id="toggle_l">スタート</button><br><br>
+
+かかった秒数<input type="number" id="second" value=""><br>
+回転回数<input type="number" id="num" value=""><br>
+
+<button type="button" id="save">保存！</button><br>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="{{ url_for('static', filename='js/test_motor.js') }}" charset="utf-8"></script>

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for, jsonify
 #import requests
-from iStand import app, config
+from iStand import app, db, config
+from iStand.models import *
 from pyzbar.pyzbar import decode
 import inspect
 import numpy as np
@@ -142,14 +143,16 @@ def set_freq_and_duty(pin, freq = frequency, duty = dutycycle):
 @app.route('/upload_motor_data/', methods=["POST"])
 def upload_motor_data():
     data = request.json
+    print(data)
     config['MOTOR_FREQUENCY'] = data['freq']
     config['MOTOR_DUTY'] = data['duty']
     config['MOTOR_SPEED'] = data['speed']
     motor_data = db.session.query(Motor).first()
-    motor_data['frequency'] = data['freq']
-    motor_data['dutycycle'] = data['duty']
-    motor_data['speed'] = data['speed']
+    motor_data.frequency = data['freq']
+    motor_data.dutycycle = data['duty']
+    motor_data.speed = data['speed']
     db.session.commit()
+    return jsonify({'success' : True, 'message' : 'update motor data'})
 
 def image_to_barcode(image):
     stream = image.stream
