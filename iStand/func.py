@@ -102,7 +102,12 @@ def bookid_to_info(bookids):
         if isbn is None:
             continue
         isbn = isbn[0]
-        list += isbn_to_info_from_opendb(isbn)
+        books = isbn_to_info_from_opendb(isbn)
+        print(books)
+        print(type(books))
+        for book in books:
+            book.book_id = bookid
+        list += books
     return list
 
 #openDBで本情報を検索
@@ -236,6 +241,7 @@ def store_book_to_db(bookid, blockid):
 
 #本の収納を取り消し（本の取り出し）
 def pickup_book_from_db(bookid):
+    print('pickup', bookid)
     book = db.session.query(Book).filter(Book.id==bookid).first()
     if book is None:
         return False
@@ -310,6 +316,7 @@ def start_moving_block(blk):
     #time.sleep(3)
 
     #pigpioチェック
+    print("start_moving_block")
     if not pigpio.pi().connected:
         return;
 
@@ -318,7 +325,10 @@ def start_moving_block(blk):
         return;
 
     position = block[0]
-    if position in [0, 1]:
+
+    print("position", position)
+
+    if position not in [0, 1]:
         for i in range(4):
             rotate_motor(190, cw=True)
             rotate_motor(0, cw=False, isSW=True,
@@ -485,6 +495,7 @@ def catch_through_book(blks, n):
             result[i] = timepassed * (331.50 + 0.606681 * 20)* 100/2
 
         # 判別
+        print(result)
         for blk in blks:
             if blk == 1 and (LOWER_CENTER - BLOCK_RANGE) <= result[0] <= (LOWER_CENTER + BLOCK_RANGE):
                 return True
@@ -497,9 +508,9 @@ def catch_through_book(blks, n):
 
         time.sleep(0.1)
 
-    pi.set_mode(PIN[0]['EHCO'], pigpio.INPUT)
+    pi.set_mode(PIN[0]['ECHO'], pigpio.INPUT)
     pi.set_mode(PIN[0]['TRIG'], pigpio.INPUT)
-    pi.set_mode(PIN[1]['EHCO'], pigpio.INPUT)
+    pi.set_mode(PIN[1]['ECHO'], pigpio.INPUT)
     pi.set_mode(PIN[1]['TRIG'], pigpio.INPUT)
     pi.stop()
 

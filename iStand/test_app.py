@@ -91,7 +91,12 @@ frequency = 10000
 dutycycle = 500000
 @app.route('/test_motor')
 def show_test_motor():
-    return render_template("test_motor.html")
+    data = {
+        'freq' : config['MOTOR_FREQUENCY'],
+        'duty' : config['MOTOR_DUTY'],
+        'speed' : config['MOTOR_SPEED']
+    }
+    return render_template("test_motor.html", data=data)
 
 @app.route('/start_motor/', methods=["POST"])
 def start_motor():
@@ -99,13 +104,13 @@ def start_motor():
     data = request.json
     pin = -1
     if data['isRight']:
-        pin = config['PIN_MOTOR1']
+        pin = int(config['PIN_MOTOR1'])
     else:
-        pin = config['PIN_MOTOR2']
+        pin = int(config['PIN_MOTOR2'])
 
     # gpio set up
     pi.set_mode(pin, pigpio.OUTPUT)
-    set_freq_and_duty(pin, freq = data['freq'], duty = data['duty'])
+    set_freq_and_duty(pin, freq = int(data['freq']), duty = int(data['duty']))
 
     return jsonify({'success' : True, 'message' : 'start motor'})
 
@@ -115,10 +120,10 @@ def stop_motor():
     data = request.json
     pin = -1
     if data['isRight']:
-        pin = config['PIN_MOTOR1']
+        pin = int(config['PIN_MOTOR1'])
     else:
-        pin = config['PIN_MOTOR2']
-    set_freq_and_duty(pin, freq = data['freq'], duty = 0)
+        pin = int(config['PIN_MOTOR2'])
+    set_freq_and_duty(pin, freq = int(data['freq']), duty = 0)
     return jsonify({'success' : True, 'message' : 'stop motor'})
 
 @app.route('/set_freq_and_duty/', methods=["POST"])
@@ -127,30 +132,31 @@ def exe_set_freq_and_duty():
     data = request.json
     pin = -1
     if data['isRight']:
-        pin = config['PIN_MOTOR1']
+        pin = int(config['PIN_MOTOR1'])
     else:
-        pin = config['PIN_MOTOR2']
-    set_freq_and_duty(pin, freq = data['freq'], duty = data['duty'])
-    return jsonify({'success' : True, 'message' : 'stop motor'})
+        pin = int(config['PIN_MOTOR2'])
+    set_freq_and_duty(pin, freq = int(data['freq']), duty = int(data['duty']))
+    return jsonify({'success' : True, 'message' : 'update motor'})
 
 def set_freq_and_duty(pin, freq = frequency, duty = dutycycle):
     global frequency
     global dutycycle
     frequency = freq
     dutycycle = duty
+    print("set : ", frequency, dutycycle)
     pi.hardware_PWM(pin, freq, duty)
 
 @app.route('/upload_motor_data/', methods=["POST"])
 def upload_motor_data():
     data = request.json
     print(data)
-    config['MOTOR_FREQUENCY'] = data['freq']
-    config['MOTOR_DUTY'] = data['duty']
-    config['MOTOR_SPEED'] = data['speed']
+    config['MOTOR_FREQUENCY'] = int(data['freq'])
+    config['MOTOR_DUTY'] = int(data['duty'])
+    config['MOTOR_SPEED'] = int(data['speed'])
     motor_data = db.session.query(Motor).first()
-    motor_data.frequency = data['freq']
-    motor_data.dutycycle = data['duty']
-    motor_data.speed = data['speed']
+    motor_data.frequency = int(data['freq'])
+    motor_data.dutycycle = int(data['duty'])
+    motor_data.speed = int(data['speed'])
     db.session.commit()
     return jsonify({'success' : True, 'message' : 'update motor data'})
 

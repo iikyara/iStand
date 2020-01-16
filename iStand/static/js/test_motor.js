@@ -1,8 +1,11 @@
 $(function(){
   var elem_freq = $('#freq');
   var elem_duty = $('#duty');
+  var elem_isRight = true;
+  var isStop = true;
 
   var start = function(e){
+    isStop = false;
     var target = "";
     var nontar = "";
     var isRight = true;
@@ -10,11 +13,13 @@ $(function(){
       target = "#toggle_r";
       nontar = "#toggle_l";
       isRight = true;
+      elem_isRight = true;
     }
     else{
       target = "#toggle_l";
       nontar = "#toggle_r";
       isRight = false;
+      elem_isRight = false;
     }
 
     //モーターをスタートさせる
@@ -32,7 +37,8 @@ $(function(){
         console.log(data);
         $(nontar).prop('disabled', true);
         $(target).text('ストップ');
-        $(target).onclick = "";
+        //$(target).onclick = "";
+        $(target).off('click');
         $(target).on('click', stop);
 
       },
@@ -43,6 +49,7 @@ $(function(){
   };
 
   var stop = function(e){
+    isStop = true;
     var target = "";
     var nontar = "";
     if(e.target.id=="toggle_r"){
@@ -71,7 +78,8 @@ $(function(){
         console.log(data);
         $(nontar).prop('disabled', false);
         $(target).text('スタート');
-        $(target).onclick = "";
+        //$(target).onclick = "";
+        $(target).off('click');
         $(target).on('click', start);
       },
       error: function() {         // HTTPエラー時
@@ -79,6 +87,29 @@ $(function(){
       }
     });
   };
+
+var change = function(e){
+if(isStop){
+ return;
+}
+console.log('a');
+data = {
+freq : elem_freq.val(),
+duty : elem_duty.val(),
+isRight: elem_isRight
+};
+$.post({
+url: '/set_freq_and_duty/',
+data: JSON.stringify(data),
+dataType: 'json',
+contentType: 'application/json'
+}).done(function(data){
+console.log(data)
+});
+};
+
+elem_freq.on('change', change);
+elem_duty.on('change', change);
 
   $('#toggle_r').on('click', start);
   $('#toggle_l').on('click', start);
