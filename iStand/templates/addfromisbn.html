@@ -6,9 +6,9 @@
 
 {% block content %}
 <h2>ISBNから追加ページ</h2>
-<form id="image_form" enctype="multipart/form-data">
-  画像ファイル <br>
-  <input type="file" name="pic">
+<form id="isbn_form" enctype="multipart/form-data">
+  ISBN <br>
+  <input type="text" name="isbn" maxlength="13" pattern="^[0-9]+$" required autofocus>
   <br>
   <input type="submit" name="botan" value="send">
 </form>

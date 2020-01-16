@@ -48,6 +48,24 @@ $(function(){
   }
   // 収納or取り出し完了！ホームに戻ろうか
   var complete = function(isCompletedSonicSensor){
+    // 収納or取り出し完了をサーバに通知
+    var op = $('#operation').val();
+    var url = "/update_book/";
+    var data = {
+      operation : $('#operation').val(),
+      book_id : $('#book_id').val(),
+      block_id : $('#block_id').val()
+    };
+
+    $.post({
+      url: url,
+      data: JSON.stringify(data),
+      dataType: "json",
+      contentType: 'application/json'
+    }).done(function(data){
+      console.log(data);
+    });
+
     elem_complete.show();
     console.log(isCompletedSonicSensor);
   }

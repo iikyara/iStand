@@ -17,16 +17,13 @@ def show_home():
 
 @app.route('/management/')
 def show_management():
-    books = get_list_of_books()
-    for book in books:
-        print(book)
     return render_template('management.html')
 
 @app.route('/search/')
 def return_search_result():
     filter = {
         "query" : "",
-        "isStored" : False,
+        "isStored" : True,
     }
     print(request.args.get("query"))
     if request.method == "GET":
@@ -35,7 +32,7 @@ def return_search_result():
                 filter[f] = request.args.get(f)
                 print(filter)
     #本情報の取得
-    books = get_list_of_books()
+    books = get_list_of_books(filter)
     result = []
     for book in books:
         result.append(
@@ -79,8 +76,7 @@ def show_confirm_add():
         'publisher' : request.form["publisher"],
         'thumbnail' : request.form["thumbnail"],
     }
-    add_book_to_db(data)
-    return render_template('confirm.html')
+    return render_template('confirm.html', data=data)
 
 @app.route('/image_to_info_as_html/', methods=["POST"])
 def return_image_to_info_as_html():
@@ -112,6 +108,7 @@ def return_isbn_to_info_as_html():
     if request.method != 'POST':
         return jsonify({'success' : False, 'message' : "only post request"})
     json = request.json
+    print(json)
     if 'isbns' in json:
         books = isbn_to_info_as_json(json['isbns'])
         result = []
@@ -180,7 +177,27 @@ def show_moving():
     t = threading.Thread(target=moving_block_and_sonic_sensor,
     args=([data['blockid']]))
     t.start()
-    return render_template('complete.html', data=data)
+    bookdata = {
+        'title' : request.form["title"],
+        'isbn' : request.form["isbn"],
+        'authors' : request.form["authors"],
+        'publisher' : request.form["publisher"],
+        'thumbnail' : request.form["thumbnail"],
+    }
+    book = add_book_to_db(bookdata)
+    bookdata['book_id'] = book.id
+    bookdata['operation'] = 'add'
+    return render_template('complete.html', data=bookdata)
+
+@app.route('/update_book/', methods=["POST"])
+def return_update_book():
+    data = request.json
+    result = False
+    if data['operation'] == "add":
+        result = store_book_to_db(data['book_id'], data['block_id'])
+    elif data['operation'] == "pickup":
+        result = pickup_book_from_db(data['book_id'])
+    return jsonify({'success' : result})
 
 @app.route('/get_state/')
 def return_state():
@@ -214,10 +231,6 @@ def return_stop_sonic_sensor():
 def return_state_of_sonic_sensor():
     state = state_of_sonic_sensor()
     return jsonify({'success' : True, 'data' : state})
-
-@app.route('/complete/')
-def show_complete():
-    return render_template('complete.html')
 
 @app.route('/image_to_barcode/', methods=["POST"])
 def return_image_to_barcode():

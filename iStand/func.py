@@ -195,6 +195,7 @@ def APIParse(json, query=[], default=""):
 
     return isSuccess, object
 
+#データベースに本を登録する
 def add_book_to_db(data):
     try:
         book = Book(
@@ -207,6 +208,7 @@ def add_book_to_db(data):
         )
     except Exception as e:
         print(e)
+        return None
     db.session.add(book)
     db.session.commit()
     #print(book)
@@ -217,13 +219,33 @@ def add_book_to_db(data):
         )
     except Exception as e:
         print(e)
+        return None
     db.session.add(author)
+    db.session.commit()
+    return book
+
+#本を収納
+def store_book_to_db(bookid, blockid):
+    book = db.session.query(Book).filter(Book.id==bookid).first()
+    if book is None:
+        return False
+    book.blockid = blockid
+    book.is_stored = True
     db.session.commit()
     return True
 
-def get_list_of_books():
+#本の収納を取り消し（本の取り出し）
+def pickup_book_from_db(bookid):
+    book = db.session.query(Book).filter(Book.id==bookid).first()
+    if book is None:
+        return False
+    book.is_stored = False
+    db.session.commit()
+    return True
+
+def get_list_of_books(filter):
     list = []
-    for book in db.session.query(Book).all():
+    for book in db.session.query(Book).filter(Book.is_stored==filter['isStored']).all():
         authors = ["情報なし"]
         if len(book.author) != 0:
             authors = [x.author for x in book.author]
@@ -260,6 +282,7 @@ def moving_block_and_sonic_sensor(blk):
     global isCompletedBlock
     global isCompletedSonicSensor
     global isFinished
+
     isCompletedBlock = False
     isCompletedSonicSensor = False
     isFinished = False
@@ -285,8 +308,16 @@ def start_moving_block(blk):
     #isMovingBlock = True
     #処理
     #time.sleep(3)
-    position = db.session.query(Block.position).filter(Block.id==blk).first()[0]
-    print(position)
+
+    #pigpioチェック
+    if not pigpio.pi().connected:
+        return;
+
+    block = db.session.query(Block.position).filter(Block.id==blk).first()
+    if block is None:
+        return;
+
+    position = block[0]
     if position in [0, 1]:
         for i in range(4):
             rotate_motor(190, cw=True)
@@ -295,7 +326,14 @@ def start_moving_block(blk):
 
 # cw = True で時計回り
 def rotate_motor(rect, cw=True, isSW=False, pin_sw=-1):
+    #pigpioに接続
     pi = pigpio.pi()
+
+    # 接続チェック
+    if not pi.connected:
+        print('pigpio is not connected.')
+        return;
+
     pi.set_mode(PIN_MOTOR1, pigpio.OUTPUT)
     pi.set_mode(PIN_MOTOR2, pigpio.OUTPUT)
     if isSW:
@@ -340,7 +378,14 @@ def start_sonic_sensor():
 
     isRunningSonicSensor = True
 
+    # pigpioに接続
     pi = pigpio.pi()
+
+    # 接続チェック
+    if not pi.connected:
+        print('pigpio is not connected.')
+        return;
+
     pi.set_mode(config["PIN_SONICSENSOR1_ECHO"], pigpio.INPUT)
     pi.set_mode(config["PIN_SONICSENSOR1_TRIG"], pigpio.OUTPUT)
     pi.set_mode(config["PIN_SONICSENSOR2_ECHO"], pigpio.INPUT)
@@ -403,6 +448,12 @@ def catch_through_book(blks, n):
     ]
 
     pi = pigpio.pi()
+
+    # 接続チェック
+    if not pi.connected:
+        print('pigpio is not connected.')
+        return False;
+
     pi.set_mode(PIN[0]['ECHO'], pigpio.INPUT)
     pi.set_mode(PIN[0]['TRIG'], pigpio.OUTPUT)
     pi.set_mode(PIN[1]['ECHO'], pigpio.INPUT)

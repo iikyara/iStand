@@ -2,15 +2,21 @@ $(function(){
   //フォームが送信されたときのイベント
   $('#isbn_form').on('submit', function(e){
     e.preventDefault();
-    var formData = new FormData($(this).get(0));
-    var url = '/image_to_info_as_html/';
-    $.ajax({
-      type: 'POST',
+    //var formData = new FormData($(this).get(0));
+    var isbn = $('[name=isbn]').val();
+    if(isbn.length != 13){
+      alert('13文字じゃないよ');
+      return;
+    }
+    var data = {isbns : [isbn]};
+    console.log(data);
+    var url = '/isbn_to_info_as_html/';
+    $.post({
       url: url,
-      data: formData,
+      data: JSON.stringify(data),
       processData: false,
       dataType: "json",
-      contentType: false
+      contentType: 'application/json'
     })
     .done(function(data){
       //console.log(data)

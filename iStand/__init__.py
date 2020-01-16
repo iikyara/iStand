@@ -10,9 +10,10 @@ db = SQLAlchemy(app)
 from iStand.models import *
 
 # モータデータの読み込み
-config['MOTOR_FREQUENCY'] = db.session.query(Motor.frequency).first()[0]
-config['MOTOR_DUTY'] = db.session.query(Motor.dutycycle).first()[0]
-config['MOTOR_SPEED'] = db.session.query(Motor.speed).first()[0]
+if 'MOTOR' in db.metadata.sorted_tables:
+    config['MOTOR_FREQUENCY'] = db.session.query(Motor.frequency).first()[0]
+    config['MOTOR_DUTY'] = db.session.query(Motor.dutycycle).first()[0]
+    config['MOTOR_SPEED'] = db.session.query(Motor.speed).first()[0]
 
 import iStand.views
 import iStand.test_app
