@@ -328,11 +328,15 @@ def start_moving_block(blk):
 
     print("position", position)
 
+    #a = [1, 3, 4, 2]
+
     if position not in [0, 1]:
         for i in range(4):
-            rotate_motor(190, cw=True)
+            rotate_motor(230, cw=True)
             rotate_motor(0, cw=False, isSW=True,
-             pin_sw=config['PIN_SWITCHES_BOX'][(i + 2) % 4])
+             pin_sw=config['PIN_SWITCHES_BOX'][(4 - i + 2) % 4])
+            #rotate_motor(0, cw=False, isSW=True,
+            # pin_sw=a[i])
 
 # cw = True で時計回り
 def rotate_motor(rect, cw=True, isSW=False, pin_sw=-1):
@@ -348,6 +352,7 @@ def rotate_motor(rect, cw=True, isSW=False, pin_sw=-1):
     pi.set_mode(PIN_MOTOR2, pigpio.OUTPUT)
     if isSW:
         pi.set_mode(pin_sw, pigpio.INPUT)
+        pass
 
     pi.hardware_PWM(PIN_MOTOR1, MOTOR_FREQUENCY, MOTOR_DUTY if cw else 0)
     pi.hardware_PWM(PIN_MOTOR2, MOTOR_FREQUENCY, MOTOR_DUTY if not cw else 0)
@@ -356,6 +361,8 @@ def rotate_motor(rect, cw=True, isSW=False, pin_sw=-1):
     if isSW:
         while pi.read(pin_sw) == 1:
             pass
+        #while not catch_through_book([pin_sw], 5):
+        #     pass
     else:
         time.sleep(rect / config['MOTOR_SPEED'])
 
@@ -438,7 +445,16 @@ LOWER_CENTER = 7.5
 BLOCK_RANGE = 15
 def catch_through_book(blks, n):
     global isRunningSonicSensor
-
+    '''
+    if blks[0] == 1:
+        print((LOWER_CENTER - BLOCK_RANGE), (LOWER_CENTER + BLOCK_RANGE))
+    elif blks[0] == 2:
+        print((UPPER_CENTER - BLOCK_RANGE), (UPPER_CENTER + BLOCK_RANGE))
+    elif blks[0] == 3:
+        print((LOWER_CENTER - BLOCK_RANGE), (LOWER_CENTER + BLOCK_RANGE))
+    elif blks[0] == 4:
+        print((UPPER_CENTER - BLOCK_RANGE), (UPPER_CENTER + BLOCK_RANGE))
+    '''
     #既に稼働済みなら実行しない
     if isRunningSonicSensor:
         print('duplication')
@@ -462,6 +478,7 @@ def catch_through_book(blks, n):
     # 接続チェック
     if not pi.connected:
         print('pigpio is not connected.')
+        isRunningSonicSensor = False
         return False;
 
     pi.set_mode(PIN[0]['ECHO'], pigpio.INPUT)
@@ -498,12 +515,16 @@ def catch_through_book(blks, n):
         print(result)
         for blk in blks:
             if blk == 1 and (LOWER_CENTER - BLOCK_RANGE) <= result[0] <= (LOWER_CENTER + BLOCK_RANGE):
+                isRunningSonicSensor = False
                 return True
             elif blk == 2 and (UPPER_CENTER - BLOCK_RANGE) <= result[0] <= (UPPER_CENTER + BLOCK_RANGE):
+                isRunningSonicSensor = False
                 return True
             elif blk == 3 and (LOWER_CENTER - BLOCK_RANGE) <= result[1] <= (LOWER_CENTER + BLOCK_RANGE):
+                isRunningSonicSensor = False
                 return True
             elif blk == 4 and (UPPER_CENTER - BLOCK_RANGE) <= result[1] <= (UPPER_CENTER + BLOCK_RANGE):
+                isRunningSonicSensor = False
                 return True
 
         time.sleep(0.1)
