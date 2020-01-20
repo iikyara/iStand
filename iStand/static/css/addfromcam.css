@@ -2,3 +2,151 @@ img {
   min-width: 30%;
   max-width: 30%;
 }
+
+input[type=file]{
+  display: none;
+}
+
+#image_form{
+  display: flex;
+  text-align: center;
+  justify-content: center;
+}
+
+.image_selector{
+  padding: 40px;
+  width: 80%;
+  border: 5px var(--color-blue2) dashed;
+  border-radius: 30px;
+  font-size: 1.5rem;
+  color: var(--color-blue2);
+  font-weight: bold;
+  text-align: center;
+  transition: .5s ease;
+  background-color: var(--color-white);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+}
+
+.image_selector:active{
+  background-color: var(--color-blue5);
+}
+
+.image_selector img{
+  max-height: 300px;
+  max-width: 100%;
+}
+
+#noresults{
+  width: 100%;
+  text-align: center;
+  margin-top: 50px;
+  display: none;
+}
+
+.scroll_list > div{
+  display: inline-block;
+  background-color: var(--color-white);
+  margin-top: 40px;
+  border-radius: 40px;
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4));
+}
+
+/* searchlist用 */
+.searchresult{
+  margin: 40px auto 40px auto;
+  position: relative;
+  padding: 40px;
+}
+
+.searchresult_upper{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.searchresult_thumbnail{
+  height: 300px;
+  width: 200px;
+  position: relative;
+  margin-right: 40px;
+}
+
+@media (max-width: 540px){
+  .searchresult_upper{
+    justify-content: center;
+  }
+
+  .searchresult_thumbnail{
+    margin-right: 0;
+  }
+}
+
+.searchresult_thumbnail img{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  max-height: 100%;
+  filter: drop-shadow(0 10px 5px rgba(0,0,0,0.4));
+}
+
+.searchresult_info{
+  font-size: 1.2rem;
+  position: relative;
+}
+
+.searchresult_info_dummy{
+  height: 50px;
+  width: 100%;
+}
+
+.searchresult_lower_dummy{
+  height: 100px;
+  width: 100%;
+}
+
+.searchresult_line1{
+  height: 0px;
+  width: 100%;
+  border-top: 1px solid;
+  border-color: #EAEFF0;
+  margin: 40px 0 40px 0;
+}
+
+.pickup_button{
+  border-style: none;
+  border-radius: 30px;
+  padding: 3px 20px 3px 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  vertical-align: middle;
+  background-color: #e0e0e0;
+  color: #507DBC;
+  cursor: pointer
+}
+
+.searchresult_info .pickup_button{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+/* add from isbn */
+#isbn_form{
+  display: flex;
+  justify-content: center;
+}
+.nice_textbox{
+  font-size: 2.0rem;
+  border-radius: 30px;
+  border: 3px var(--color-blue3) solid;
+  padding: 10px 20px 10px 20px;
+  transition: .5s ease;
+}
+
+.nice_textbox:focus{
+  border-color: var(--color-blue2);
+  outline: 0;
+}

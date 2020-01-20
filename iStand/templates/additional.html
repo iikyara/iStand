@@ -1,17 +1,40 @@
 {% extends "base.html" %}
-{% set title = "追加ページ" %}
+{% set title = "追加" %}
 {% block additional %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/additional.css') }}">
+{% endblock %}
+
+{% block description %}
+新しく本を追加します。
 {% endblock %}
 
 {% block content %}
-<h2>追加ページ</h2>
-<p>
-  <h1>新しい本を追加する</h1>
-  <p><a href="/addfromcam/">カメラから</a></p>
-  <p><a href="/addfromisbn/">ISBNを直接入力</a></p>
-</p>
+<div class="container">
+  <span>
+    バーコード撮影、またはISBNを入力することで<br>
+    <img class="iStand_l" src="{{ url_for('static', filename='img/iStand_l.png') }}" alt="iStand">
+    に本を追加することが出来ます。 <br>
+  </span>
+
+  <a href="/addfromcam/" id="button_addfromcam" class="long_button">
+    <div>
+      <i class="fas fa-plus"></i>
+      <span>バーコード撮影</span>
+    </div>
+    <i class="fas fa-chevron-right"></i>
+  </a>
+  <a href="/addfromisbn/" id="button_addfromisbn" class="long_button">
+    <div>
+      <i class="fas fa-plus"></i>
+      <span>ISBNを入力</span>
+    </div>
+    <i class="fas fa-chevron-right"></i>
+  </a>
+</div>
+<!--
 <p>
   <h1>取り出した本を収納する</h1>
   <p><a href="/addfromhist/">履歴から</a></p>
 </p>
+-->
 {% endblock %}

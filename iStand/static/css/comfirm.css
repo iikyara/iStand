@@ -1,0 +1,27 @@
+.block_list{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+
+.block_button{
+  border-radius: 10px;
+  border: 5px var(--color-blue2) solid;
+  background-color: var(--color-blue5);
+  color: var(--color-blue2);
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 30px;
+  margin: 10px;
+  cursor: pointer;
+  transition: .3s ease;
+}
+
+.block_button:hover{
+  background-color: var(--color-blue4);
+}
+
+.comfirm_center{
+  text-align: center;
+}

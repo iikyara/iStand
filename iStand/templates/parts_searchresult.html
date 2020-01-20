@@ -1,0 +1,23 @@
+<div class="searchresult" name="book" id="book{{number}}">
+  <div class="searchresult_upper">
+    <div class="searchresult_thumbnail">
+      <img id="searchresult_thumbnail" name="thumbnail" src="{{book.thumbnail}}" alt="{{book.title}}" onerror="this.src='{{ url_for('static', filename='img/noimage.png') }}'">
+    </div>
+    <div class="searchresult_info">
+      <h2 name="title">{{book.title}}</h2>
+      <div  name="authors">{{book.authors}}</div>
+      <div name="publisher">{{book.publisher}}</div>
+      ISBN：<span name="isbn">{{book.isbn}}</span> <br>
+      <div class="searchresult_info_dummy"></div>
+      <button class="pickup_button" name="add_button" type="button" id="add_{{number}}">追加</button>
+    </div>
+  </div>
+  <div class="searchresult_line1"></div>
+  <div class="searchresult_lower">
+    <div name="searchresult">
+      <h2>作品情報</h2>
+      {{book.detail}}
+    </div>
+    <div class="searchresult_lower_dummy"></div>
+  </div>
+</div>

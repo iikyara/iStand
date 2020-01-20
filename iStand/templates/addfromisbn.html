@@ -1,20 +1,25 @@
 {% extends "base.html" %}
-{% set title = "ISBNから追加ページ" %}
+{% set title = "追加" %}
 {% block additional %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/addfromisbn.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/addfromcam.css') }}">
+{% endblock %}
+
+{% block description %}
+本に記載されているISBNを入力して、本を追加することが出来ます。
 {% endblock %}
 
 {% block content %}
-<h2>ISBNから追加ページ</h2>
 <form id="isbn_form" enctype="multipart/form-data">
-  ISBN <br>
-  <input type="text" name="isbn" maxlength="13" pattern="^[0-9]+$" required autofocus>
-  <br>
-  <input type="submit" name="botan" value="send">
+  <input class="nice_textbox" type="text" name="isbn" maxlength="13" pattern="^[0-9]+$" placeholder="ISBNコードを入力" required autofocus>
 </form>
-<div id="results">
 
+<div id="noresults">
+  情報がありませんでした。 <br>
+  もう一度、お試しください。
 </div>
+
+<div id="results" class="scroll_list"></div>
+
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="{{ url_for('static', filename='js/addfromisbn.js') }}" charset="utf-8"></script>
 {% endblock %}

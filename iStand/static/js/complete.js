@@ -40,14 +40,43 @@ $(function(){
   getState(state);
   // 移動中
   var moving = function(){
-    elem_moving.show();
+    elem_moving.fadeIn(500);
+    $('#point1').addClass("progressbar_point_now");
   }
   // 移動完了！収納してねor取り出してね
   var stop = function(){
-    elem_stop.show();
+    //moving();
+
+    $('#point1').removeClass("progressbar_point_now");
+    $('#point1').addClass("progressbar_point_check");
+    $('#point2').addClass("progressbar_point_now");
+    $('#line1-2').addClass("progressbar_line_check");
+
+    var data = {
+      block_id : $('#block_id').val()
+    };
+    $.post({
+      url : '/get_block_position/',
+      data : JSON.stringify(data),
+      dataType : 'json',
+      contentType : 'application/json'
+    }).done(function(data){
+      console.log(data);
+      var block = $('#block' + data['data'])
+      block.addClass("block_selected");
+      block.text("ココ");
+      elem_moving.fadeOut(500);
+      elem_stop.fadeIn(500);
+    });
   }
   // 収納or取り出し完了！ホームに戻ろうか
   var complete = function(isCompletedSonicSensor){
+    //moving();
+    //stop();
+    $('#point2').removeClass("progressbar_point_now");
+    $('#point2').addClass("progressbar_point_check");
+    $('#point3').addClass("progressbar_point_now");
+    $('#line2-3').addClass("progressbar_line_check");
     // 収納or取り出し完了をサーバに通知
     var op = $('#operation').val();
     var url = "/update_book/";
@@ -66,7 +95,8 @@ $(function(){
       console.log(data);
     });
 
-    elem_complete.show();
+    elem_stop.fadeOut(500);
+    elem_complete.fadeIn(500);
     console.log(isCompletedSonicSensor);
   }
 });

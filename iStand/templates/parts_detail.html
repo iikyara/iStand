@@ -1,13 +1,25 @@
 <div class="detail" name="book" id="book{{number}}">
-  <img src="{{book.smallthumbnail}}" name="thumbnail" alt="サムネイル"><br>
-  タイトル：
-  <div name="title">{{book.title}}</div><br>
-  ISBN：
-  <div name="isbn">{{book.isbn}}</div><br>
-  著者：
-  <div name="authors">{{book.authors}}</div><br>
-  出版社：
-  <div name="publisher">{{book.publisher}}</div><br>
-  詳細
-  <div name="detail">{{book.detail}}</div><br>
+  <div class="detail_upper">
+    <div class="detail_thumbnail">
+      <img id="detail_thumbnail" src="{{book.thumbnail}}" alt="{{book.title}}" onerror="this.src='{{ url_for('static', filename='img/noimage.png') }}'">
+    </div>
+    <div class="detail_info">
+      <h2 name="title">{{book.title}}</h2>
+      <div  name="authors">{{book.authors}}</div>
+      <div name="publisher">{{book.publisher}}</div>
+      <div name="isbn">ISBN：{{book.isbn}}</div>
+      <div class="detail_info_dummy"></div>
+      <button class="pickup_button" type="button" id="pickup">取り出し</button>
+    </div>
+  </div>
+  <div class="detail_line1"></div>
+  <div class="detail_lower">
+    <div name="detail">
+      <h2>作品情報</h2>
+      {{book.detail}}
+    </div>
+    <div class="detail_lower_dummy"></div>
+  </div>
+  <button type="button" id="close"><i class="fas fa-times-circle"></i></button>
+  <input type="hidden" id="bookid" value="">
 </div>

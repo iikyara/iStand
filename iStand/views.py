@@ -6,6 +6,10 @@ from iStand.models import *
 from iStand.func import *
 import threading
 
+@app.route("/favicon.ico")
+def favicon():
+    return app.send_static_file("img/favicon_2.ico")
+
 @app.route('/show_block/')
 def show_blocks():
     disp = str([("BLOCK", x.id, x.position) for x in Block.query.all()])
@@ -96,7 +100,7 @@ def return_image_to_info_as_html():
     result = []
     for i in range(len(books)):
         result.append(
-            render_template('parts_detail.html', number=i, book=books[i])
+            render_template('parts_searchresult.html', number=i, book=books[i])
         )
     return jsonify({
         'success' : True,
@@ -114,7 +118,7 @@ def return_isbn_to_info_as_html():
         result = []
         for i in range(len(books)):
             result.append(
-                render_template('parts_detail.html', number=i, book=books[i])
+                render_template('parts_searchresult.html', number=i, book=books[i])
             )
         return jsonify({
             'success' : True,
@@ -164,7 +168,7 @@ def show_pickup():
     t.start()
     bookdata = bookid_to_info_as_json(data['bookid'])[0]
     blockid = get_blockid_from_bookid(data['bookid'])
-    print("blockid", blockid)
+    print("show_pickup", data['bookid'], blockid)
     bookdata['block_id'] = blockid
     bookdata['operation'] = 'pickup'
     return render_template('complete.html', data=bookdata)
@@ -186,8 +190,16 @@ def show_moving():
     }
     book = add_book_to_db(bookdata)
     bookdata['book_id'] = book.id
+    bookdata['block_id'] = data['blockid']
     bookdata['operation'] = 'add'
     return render_template('complete.html', data=bookdata)
+
+@app.route('/get_block_position/', methods=["POST"])
+def return_get_block_position():
+    data = request.json
+    print(data)
+    position = get_block_position(data['block_id'])
+    return jsonify({'success' : position is not None, 'data' : position})
 
 @app.route('/update_book/', methods=["POST"])
 def return_update_book():

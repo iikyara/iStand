@@ -2,13 +2,41 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-store">
+    <meta http-equiv="Expires" content="-1">
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
     {% block additional %}
     {% endblock %}
     <title>{{ title }} - iStand</title>
   </head>
   <body>
-    <h1><a href="/">ホームに戻る</a></h1>
-    {% block content %}
-    {% endblock %}
+    <div class="base_container">
+      <div class="base_head">
+        <h1>{{ title }}</h1>
+        <div class="base_head_description">
+          <i class="far fa-question-circle"></i>
+          {% block description %}
+          {% endblock %}
+        </div>
+        <div class="base_head_line"></div>
+      </div>
+      <div class="base_main">
+        {% block content %}
+        {% endblock %}
+      </div>
+      <div class="base_bottom"></div>
+    </div>
+
+    <div class="base_menu">
+      <a id="menu_home" href="/"><i class="fas fa-home"></i><span>ホーム</span></a>
+      <a id="menu_management" href="/management/"><i class="fas fa-book"></i><span>取り出し</span></a>
+      <a id="menu_additional" href="/additional/"><i class="fas fa-plus"></i></i><span>追加</span></a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="{{ url_for('static', filename='js/base.js') }}" charset="utf-8"></script>
   </body>
 </html>

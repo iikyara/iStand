@@ -1,20 +1,26 @@
 {% extends "base.html" %}
-{% set title = "カメラから追加ページ" %}
+{% set title = "追加" %}
 {% block additional %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/addfromcam.css') }}">
 {% endblock %}
 
-{% block content %}
-<h2>カメラから追加ページ</h2>
-<form id="image_form" enctype="multipart/form-data" method="POST">
-  画像ファイル <br>
-  <input type="file" name="pic">
-  <br>
-  <input type="submit" name="botan" value="send">
-</form>
-<div id="results">
+{% block description %}
+カメラでバーコードを撮影して本を追加しましょう。
+{% endblock %}
 
+{% block content %}
+<form id="image_form" enctype="multipart/form-data" method="POST">
+  <input type="file" name="pic" id="image_selector" dropzone="copy" required>
+  <label class="image_selector" for="image_selector" id="image_selector-label">ファイルを選択してください</label>
+</form>
+
+<div id="noresults">
+  情報がありませんでした。 <br>
+  もう一度、お試しください。
 </div>
+
+<div id="results" class="scroll_list"></div>
+
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="{{ url_for('static', filename='js/addfromcam.js') }}" charset="utf-8"></script>
 {% endblock %}

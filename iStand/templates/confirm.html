@@ -1,18 +1,25 @@
 {% extends "base.html" %}
-{% set title = "ブロック選択" %}
+{% set title = "追加" %}
 {% block additional %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/comfirm.css') }}">
+{% endblock %}
+
+{% block description %}
+本を収納するブロックを選んでください。
 {% endblock %}
 
 {% block content %}
-<h2>ブロック選択</h2>
-本を収納するブロックを選んでください．
-{% for i in range(1, 7) %}
-  <div id="block{{i}}">
-    <button type="button" name="blk_btn" id="blk_btn{{i}}">ブロック{{i}}に入れる</button>
-  </div>
-{% endfor %}
-title : {{data.title}}<br>
-authors : {{data.authors}}<br>
+<span class="comfirm_center">
+  本を収納するブロックを選んでください。
+</span>
+<div class="block_list">
+  {% for i in range(1, 7) %}
+    <div id="block{{i}}">
+      <button class="block_button" type="button" name="blk_btn" id="blk_btn{{i}}">ブロック{{i}}に入れる</button>
+    </div>
+  {% endfor %}
+</div>
+
 <!-- book info field -->
 <input type="hidden" id="session" value="{{data.session}}">
 <input type="hidden" id="title" value="{{data.title}}">

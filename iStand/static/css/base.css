@@ -1,0 +1,156 @@
+/* あいうえお */
+/* https://coolors.co/112342-507dbc-a1c6ea-bbd1ea-eaeff0 */
+:root{
+  --color-blue1: #112342;
+  --color-blue2: #507DBC;
+  --color-blue3: #A1C6EA;
+  --color-blue4: #BBD1EA;
+  --color-blue5: #EAEFF0;
+  --color-white: #FFFFFF;
+  --color-gray : #AAAAAA;
+  --color-dark : #050505;
+}
+
+html{
+  font-size: 90%;
+  overflow-x: hidden;
+  touch-action: manipulation;
+  overflow-y: scroll;
+  -ms-overflow-style: none;    /* IE, Edge 対応 */
+  scrollbar-width: none;       /* Firefox 対応 */
+}
+
+html::-webkit-scrollbar{
+  display: none;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system,Segoe UI,Helvetica Neue,Hiragino Kaku Gothic ProN,meiryo,"メイリオ",sans-serif;
+  font-size: 1.4rem;
+}
+
+h1{
+  font-weight: bold;
+  font-size: 2.0rem;
+}
+
+h2{
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+.moderate1{
+  font-size: 1.1rem;
+  color: #E0E0E0;
+}
+
+.base_menu {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  z-index: 999;
+  border-top: 1px solid;
+  text-align: center;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.base_menu a{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-decoration: none;
+  text-align: center;
+  flex-grow:1;
+  vertical-align: middle;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.base_menu i{
+  font-size: 1.5rem;
+}
+
+.base_menu span{
+  display: inline-block;
+  font-size: 1.0rem;
+  vertical-align: middle;
+  margin-left: 3px;
+  margin: auto 0 auto 8px;
+}
+
+@media (max-width: 400px){
+  .base_menu span{
+    display: none;
+  }
+}
+
+.base_bottom{
+  width: 100%;
+  height: 100px;
+}
+
+.base_container{
+  padding: 30px;
+}
+
+.base_head_description{
+  font-size: 1.1rem;
+  margin-top: 5px;
+  margin-bottom: 8px;
+}
+
+.base_head_line{
+  height: 0px;
+  width: 100%;
+  border-top: 1px solid;
+}
+
+.base_main{
+  margin-top: 40px;
+}
+
+.iStand_l{
+  display: inline-block;
+  height: 1.1rem;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+/* 長いボタン */
+.long_button{
+  display: inline-block;
+  position: relative;
+  padding: 20px;
+  padding-left: 15px;
+  border-radius: 10px;
+  filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.4));
+  vertical-align: middle;
+  text-align: left;
+  cursor: pointer
+}
+
+.long_button > div{
+  position: absolute;
+  left: 15px;
+}
+
+.long_button > i{
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translate(0, -50%);
+  -webkit-transform: translate(0, -50%);
+  margin: auto;
+}
+
+.long_button::after{
+  content: "ダミー";
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-left: 5px;
+  visibility: hidden;
+}

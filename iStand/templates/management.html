@@ -1,25 +1,38 @@
 {% extends "base.html" %}
-{% set title = "管理ページ" %}
+{% set title = "取り出し" %}
 {% block additional %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/management.css') }}">
+{% endblock %}
+
+{% block description %}
+本を検索して取り出すことが出来ます。
 {% endblock %}
 
 {% block content %}
-<h2>管理ページ</h2>
+<!--
 <form action="home.html" id="search_form" method="post">
   検索： <input type="text" name="query" value="">
   <input type="submit" name="submit" value="送信">
 </form>
-<div id="book_list">
-
-</div>
-<div id="detail_overflow">
-  <button type="button" id="close">閉じる</button>
-  <button type="button" id="pickup">取り出し</button>
-  <input type="hidden" id="bookid" value="">
-  <div id="zone_detail">
-
+-->
+<div class="mng_nobook">
+  <span>
+    現在、収納されている本はありません。 <br>
+    <img class="iStand_l" src="{{ url_for('static', filename='img/iStand_l.png') }}" alt="iStand">へ本を収納してみましょう。
+  </span>
+  <div id="mng_nobook_add" class="long_button">
+    <div>
+      <i class="fas fa-plus"></i>
+      <span>本を追加する</span>
+    </div>
+    <i class="fas fa-chevron-right"></i>
   </div>
 </div>
+
+<div id="book_list" class="book_list"></div>
+
+<div id="detail_overflow"></div>
+<div id="zone_detail"></div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="{{ url_for('static', filename='js/management.js') }}" charset="utf-8"></script>

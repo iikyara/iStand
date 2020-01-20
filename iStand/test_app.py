@@ -160,6 +160,11 @@ def upload_motor_data():
     db.session.commit()
     return jsonify({'success' : True, 'message' : 'update motor data'})
 
+@app.route('/show_books/')
+def show_books():
+    books = db.session.query(Book).all()
+    return render_template("test_books.html", books=books)
+
 def image_to_barcode(image):
     stream = image.stream
     img_array = np.asarray(bytearray(stream.read()), dtype=np.uint8)

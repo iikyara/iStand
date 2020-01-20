@@ -1,26 +1,58 @@
 {% extends "base.html" %}
-{% set title = "完了" %}
+{% if data.operation == 'add' %}
+{% set title = "追加" %}
+{% elif data.operation == 'pickup'%}
+{% set title = "取り出し" %}
+{% endif %}
+
 {% block additional %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/complete.css') }}">
+{% endblock %}
+
+{% block description %}
+本を取り出しています。しばらくお待ちください。
 {% endblock %}
 
 {% block content %}
-<div id="moving">
-  <h2>移動中</h2>
+<div class="progressbar">
+  <div class="progressbar_point" id="point1"></div>
+  <div class="progressbar_line" id="line1-2"></div>
+  <div class="progressbar_point" id="point2"></div>
+  <div class="progressbar_line" id="line2-3"></div>
+  <div class="progressbar_point" id="point3"></div>
 </div>
-<div id="stop">
-  <h2>移動完了</h2>
-  {% if data.operation == 'add' %}
-  本を入れてください．（ブロック番号：{{data.block_id}}）
-  {% elif data.operation == 'pickup'%}
-  本を取り出してください．（ブロック番号：{{data.block_id}}）
-  {% endif %}
-</div>
-<div id="complete">
-  <h2>ホームに戻れ</h2>
-  <a href="/">ホームへ</a>
-  {% if data.operation == 'add' %}
-  <a href="/additional/">続けて追加</a>
-  {% endif %}
+<div class="complete_main">
+  <div class="complete_prog" id="moving">
+    <h2>移動中</h2><br>
+    <div class="complete_info">
+      本棚に触れないでください． <br>
+      （もし止まったら助けてあげて）
+    </div>
+  </div>
+  <div class="complete_prog" id="stop">
+    <h2>移動完了</h2><br>
+    <div class="complete_info">
+      {% if data.operation == 'add' %}
+      本を入れてください。
+      {% elif data.operation == 'pickup'%}
+      本を取り出してください。
+      {% endif %}
+      <div class="block_position">
+        <div class="block_list">
+          <div id="block2" class="block_one"></div>
+          <div id="block4" class="block_one"></div>
+          <div id="block1" class="block_one"></div>
+          <div id="block3" class="block_one"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="complete_prog" id="complete">
+    <h2>終了</h2><br>
+    <div class="complete_info">
+      下のメニューからホームに戻ってください。
+    </div>
+  </div>
 </div>
 
 <!-- book info field -->

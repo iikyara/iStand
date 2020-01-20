@@ -1,0 +1,29 @@
+.container{
+  position: absolute;
+  text-align: center;
+  width: 90%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media (max-width: 470px){
+  .container > span{
+    font-size: 1.0rem;
+  }
+}
+
+#button_addfromcam, #button_addfromisbn{
+  margin: 20px 10px 20px 10px;
+  width: 40%;
+  max-width: 400px;
+  text-decoration: none;
+}
+
+@media (max-width: 640px) {
+  #button_addfromcam, #button_addfromisbn{
+    margin: 10px auto 10px auto;
+    width: 80%;
+    text-decoration: none;
+  }
+}

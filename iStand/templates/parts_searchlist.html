@@ -1,11 +1,15 @@
-<div name="book" id="book{{book.book_id}}">
-  <img src="{{book.thumbnail}}" alt="サムネイル">
-  <div>
-    タイトル：{{book.title}}
+<div name="book" id="book{{book.book_id}}" class="searchlist">
+  <div class="searchlist_thumbnail">
+    <img src="{{book.thumbnail}}" alt="{{book.title}}" onerror="this.src='{{ url_for('static', filename='img/noimage.png') }}'">
   </div>
-  <div>
-    著者：{{book.authors[0]}}
+  <div class="searchlist_info">
+
+    <div class="searchlist_title">
+      {{book.title}}
+    </div>
+    <div class="searchlist_authors">
+      {{book.authors[0]}}
+    </div>
+    <button class="pickup_button" type="button" name="pickup" id="pickup{{book.book_id}}">取り出し</button>
   </div>
-  <button type="button" name="pickup" id="pickup{{book.book_id}}">取り出し</button>
-  <button type="button" name="detail" id="detail{{book.book_id}}">詳細</button>
 </div>

@@ -232,16 +232,17 @@ def add_book_to_db(data):
 #本を収納
 def store_book_to_db(bookid, blockid):
     book = db.session.query(Book).filter(Book.id==bookid).first()
+    print("store_book_to_db", bookid, blockid, book)
     if book is None:
         return False
-    book.blockid = blockid
+    book.block_id = blockid
     book.is_stored = True
     db.session.commit()
     return True
 
 #本の収納を取り消し（本の取り出し）
 def pickup_book_from_db(bookid):
-    print('pickup', bookid)
+    print('pickup_book_from_db', bookid)
     book = db.session.query(Book).filter(Book.id==bookid).first()
     if book is None:
         return False
@@ -271,14 +272,32 @@ def get_list_of_books(filter):
 # 本取り出し（ブロックを検索して，ブロックが前面に来るように動く）
 def pickup_book(bookid):
     blockid = get_blockid_from_bookid(bookid)
-    print(blockid)
+    print("pickup_book", blockid)
     moving_block_and_sonic_sensor(blockid)
 
 def get_blockid_from_bookid(bookid):
     book = db.session.query(Book.block_id).filter(Book.id==bookid).first()
+    print("get_blockid_from_bookid", bookid, book)
     if book is None:
         return -1
     return book[0]
+
+def get_block_position(blockid):
+    block = db.session.query(Block).filter(Block.id==blockid).first()
+    if block is None:
+        return None
+    flag = (block.position, block.id % 2)
+    print("get_block_position", flag)
+    if flag == (0, 1):
+        return 1
+    if flag == (0, 0):
+        return 2
+    if flag == (1, 1):
+        return 3
+    if flag == (1, 0):
+        return 4
+
+    return None
 
 # ブロック移動からセンサ感知までの一連の動作
 isCompletedBlock = False
@@ -337,6 +356,7 @@ def start_moving_block(blk):
              pin_sw=config['PIN_SWITCHES_BOX'][(4 - i + 2) % 4])
             #rotate_motor(0, cw=False, isSW=True,
             # pin_sw=a[i])
+            update_rotate_block_in_db()
 
 # cw = True で時計回り
 def rotate_motor(rect, cw=True, isSW=False, pin_sw=-1):
@@ -372,6 +392,16 @@ def rotate_motor(rect, cw=True, isSW=False, pin_sw=-1):
     pi.set_mode(PIN_MOTOR1, pigpio.INPUT)
     pi.set_mode(PIN_MOTOR2, pigpio.INPUT)
     pi.stop()
+
+def update_rotate_block_in_db():
+    for pos in range(4):
+        block = db.session.query(Block).filter(Block.position==pos).first()
+        if block is None:
+            blocks = db.session.query(Block).filter(Block.position==(pos+3)%4).all()
+            for block in blocks:
+                block.position = pos
+            break
+    db.session.commit()
 
 '''
 def is_moving_block():
@@ -445,6 +475,12 @@ LOWER_CENTER = 7.5
 BLOCK_RANGE = 15
 def catch_through_book(blks, n):
     global isRunningSonicSensor
+
+    #blksから位置を取得
+    poss = []
+    for blk in blks:
+        poss.append(get_block_position(blk))
+
     '''
     if blks[0] == 1:
         print((LOWER_CENTER - BLOCK_RANGE), (LOWER_CENTER + BLOCK_RANGE))
@@ -513,17 +549,17 @@ def catch_through_book(blks, n):
 
         # 判別
         print(result)
-        for blk in blks:
-            if blk == 1 and (LOWER_CENTER - BLOCK_RANGE) <= result[0] <= (LOWER_CENTER + BLOCK_RANGE):
+        for pos in poss:
+            if pos == 1 and (LOWER_CENTER - BLOCK_RANGE) <= result[0] <= (LOWER_CENTER + BLOCK_RANGE):
                 isRunningSonicSensor = False
                 return True
-            elif blk == 2 and (UPPER_CENTER - BLOCK_RANGE) <= result[0] <= (UPPER_CENTER + BLOCK_RANGE):
+            elif pos == 2 and (UPPER_CENTER - BLOCK_RANGE) <= result[0] <= (UPPER_CENTER + BLOCK_RANGE):
                 isRunningSonicSensor = False
                 return True
-            elif blk == 3 and (LOWER_CENTER - BLOCK_RANGE) <= result[1] <= (LOWER_CENTER + BLOCK_RANGE):
+            elif pos == 3 and (LOWER_CENTER - BLOCK_RANGE) <= result[1] <= (LOWER_CENTER + BLOCK_RANGE):
                 isRunningSonicSensor = False
                 return True
-            elif blk == 4 and (UPPER_CENTER - BLOCK_RANGE) <= result[1] <= (UPPER_CENTER + BLOCK_RANGE):
+            elif pos == 4 and (UPPER_CENTER - BLOCK_RANGE) <= result[1] <= (UPPER_CENTER + BLOCK_RANGE):
                 isRunningSonicSensor = False
                 return True
 
