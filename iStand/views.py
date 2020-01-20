@@ -166,7 +166,7 @@ def show_pickup():
     data = request.form
     t = threading.Thread(target=pickup_book, args=([data['bookid']]))
     t.start()
-    bookdata = bookid_to_info_as_json(data['bookid'])[0]
+    bookdata = bookid_to_info_as_json([data['bookid']])[0]
     blockid = get_blockid_from_bookid(data['bookid'])
     print("show_pickup", data['bookid'], blockid)
     bookdata['block_id'] = blockid

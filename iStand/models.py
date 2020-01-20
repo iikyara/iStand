@@ -17,7 +17,7 @@ class Book(db.Model):
     author = db.relationship("Author")
 
     def __repr__(self):
-        return "<BOOK id={} title={!r} isbn={!r} block={!r}>".format(self.id, self.title, self.isbn, self.block_id)
+        return "<BOOK id={} title={!r} isbn={!r} block={!r} is_stored={!r}>".format(self.id, self.title, self.isbn, self.block_id, self.is_stored)
 
 class Log(db.Model):
     __tablename__ = 'LOG'
