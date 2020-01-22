@@ -73,6 +73,8 @@ $(function(){
   var complete = function(isCompletedSonicSensor){
     //moving();
     //stop();
+    $('#point1').removeClass("progressbar_point_now");
+    $('#point1').addClass("progressbar_point_check");
     $('#point2').removeClass("progressbar_point_now");
     $('#point2').addClass("progressbar_point_check");
     $('#point3').addClass("progressbar_point_now");
@@ -95,6 +97,7 @@ $(function(){
       console.log(data);
     });
 
+    elem_moving.fadeOut(500);
     elem_stop.fadeOut(500);
     elem_complete.fadeIn(500);
     console.log(isCompletedSonicSensor);

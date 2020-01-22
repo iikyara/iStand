@@ -535,9 +535,11 @@ def catch_through_book(blks, n):
             pi.write(PIN[i]['TRIG'], 0)
 
             # detect TTL level signal on Echo
+            signaloff = time.time()
             while pi.read(PIN[i]['ECHO']) == 0:
               signaloff = time.time()
-            while pi.read(PIN[i]['ECHO']) == 1:
+            signalon = signaloff + 1
+            while pi.read(PIN[i]['ECHO']) == 1 and (time.time() - signaloff < 0.3):
               signalon = time.time()
 
             # calculate the time interval
